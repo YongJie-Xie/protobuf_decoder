@@ -8,8 +8,8 @@ import traceback
 strings = []
 
 def GetDynamicWireFormat(data, start, end):
-    wire_type = ord(data[start]) & 0x7
-    firstByte = ord(data[start])
+    wire_type = data[start] & 0x7
+    firstByte = data[start]
     if (firstByte & 0x80) == 0:
         field_number = (firstByte >> 3)
         return (start+1, wire_type, field_number)
@@ -19,7 +19,7 @@ def GetDynamicWireFormat(data, start, end):
         while True:
             if start+pos >= end:
                 return (None, None, None)
-            oneByte = ord(data[start+pos])
+            oneByte = data[start+pos]
             byteList.append(oneByte & 0x7F)
             pos = pos + 1
             if oneByte & 0x80 == 0x0:
@@ -45,11 +45,11 @@ def RetrieveInt(data, start, end):
     while True:
         if start+pos >= end:
             return (None, None, False)
-        oneByte = ord(data[start+pos])
+        oneByte = data[start+pos]
         byteList.append(oneByte & 0x7F)
         pos = pos + 1
         if oneByte & 0x80 == 0x0:
-            break;
+            break
 
     newStart = start + pos
 
@@ -98,7 +98,7 @@ def ParseData(data, start, end, messages, depth = 0):
                 if start+pos >= end:
                     return False
                 #num = (num << 8) + ord(data[start+1+pos])
-                num = (num << 8) + ord(data[start+pos])
+                num = (num << 8) + data[start+pos]
                 pos = pos - 1
 
             #start = start + 9
@@ -164,7 +164,7 @@ def ParseData(data, start, end, messages, depth = 0):
                        del strings[curStrIndex + 1:]     #pop failed result
                        messages.pop('%02d:%02d:repeated' % (field_number, ordinary), None)
                        #print traceback.format_exc()
-                       hexStr = ['0x%x' % ord(x) for x in data[start:start+stringLen]]
+                       hexStr = ['0x%x' % x for x in data[start:start+stringLen]]
                        hexStr = ':'.join(hexStr)
                        strings.append("(%d) bytes: %s\n" % (field_number, hexStr))
                        messages['%02d:%02d:bytes' % (field_number, ordinary)] = hexStr
@@ -182,7 +182,7 @@ def ParseData(data, start, end, messages, depth = 0):
                 if start+pos >= end:
                     return False
                 #num = (num << 8) + ord(data[start+1+pos])
-                num = (num << 8) + ord(data[start+pos])
+                num = (num << 8) + data[start+pos]
                 pos = pos - 1
 
             #start = start + 5
@@ -462,7 +462,7 @@ if __name__ == "__main__":
     else:
         messages = ParseProto(sys.argv[1])
 
-        print json.dumps(messages, indent=4, sort_keys=True, ensure_ascii=False, encoding='utf-8')
+        print(json.dumps(messages, indent=4, sort_keys=True, ensure_ascii=False, encoding='utf-8'))
 
         # modify any field you like
         #messages['01:00:embedded message']['01:00:string'] = "あなた"
@@ -477,4 +477,3 @@ if __name__ == "__main__":
 
         # the modification is saved in file named "modified"
         SaveModification(messages, "modified")
-
