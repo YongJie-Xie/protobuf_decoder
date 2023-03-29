@@ -1,3 +1,8 @@
+Update code copied from https://www.cnblogs.com/Denny_Yang/p/15660376.html
+
+History
+---
+
 # protobuf-decoder
 
 This is a protobuf-decoder which can decode protobuf binary file without .proto files. It supports editing to the decoded file and re-encoding to a bianry file. It can also work as a brup plugin.
